@@ -1,3 +1,8 @@
+package principal;
+
+import model.*;
+
+import java.util.Random;
 import java.util.Scanner;
 
 public class Jogo {
@@ -9,14 +14,12 @@ public class Jogo {
         this.scanner = new Scanner(System.in);
     }
 
-    // Método para iniciar o jogo
     public void iniciar() {
         System.out.println("Bem-vindo ao RPG Textual!");
         System.out.print("Digite o nome do seu personagem: ");
         String nomeDoJogador = scanner.nextLine();
         jogador = new Jogador(nomeDoJogador);
 
-        // Configura o mundo do jogo
         mundo = new Mundo();
         configurarMundo();
 
@@ -24,9 +27,9 @@ public class Jogo {
         jogar();
     }
 
-    // Método para jogar o jogo
     public void jogar() {
         while (true) {
+            limparConsole();
             System.out.println("\nO que você gostaria de fazer?");
             System.out.println("1. Explorar");
             System.out.println("2. Ver status");
@@ -34,7 +37,7 @@ public class Jogo {
             System.out.println("4. Sair");
 
             int escolha = scanner.nextInt();
-            scanner.nextLine(); // Consumir nova linha
+            scanner.nextLine();
 
             switch (escolha) {
                 case 1:
@@ -56,11 +59,9 @@ public class Jogo {
         }
     }
 
-    // Método para configurar o mundo do jogo
     private void configurarMundo() {
-        // Cria alguns locais e inimigos de exemplo
         Localizacao floresta = new Localizacao("Floresta");
-        floresta.adicionarInimigo(new Inimigo("Lobo", 30, 5, 2));
+        floresta.adicionarInimigo(new Inimigo("Lobo", 30, 10, 2)); // Ajuste o poderDeAtaque para 10
         floresta.adicionarInimigo(new Inimigo("Goblin", 20, 4, 1));
 
         Localizacao caverna = new Localizacao("Caverna");
@@ -71,10 +72,15 @@ public class Jogo {
         mundo.adicionarLocalizacao(caverna);
     }
 
-    // Método para explorar o mundo
     private void explorar() {
         System.out.println("Você está explorando...");
-        // Seleciona um local aleatório para explorar
+
+        Item item = gerarItemAleatorio();
+        if (item != null) {
+            System.out.println("Você encontrou um item: " + item.getNome());
+            jogador.adicionarItem(item);
+        }
+
         Localizacao local = mundo.getLocalizacaoAleatoria();
         System.out.println("Você encontrou: " + local.getNome());
 
@@ -82,7 +88,7 @@ public class Jogo {
             System.out.println("Não há inimigos aqui.");
         } else {
             for (Inimigo inimigo : local.getInimigos()) {
-                batalhar(inimigo);
+                batalhar(inimigo, item);  // Passa o item como argumento
                 if (jogador.getVida() <= 0) {
                     System.out.println("Você morreu. Fim de jogo.");
                     return;
@@ -91,8 +97,35 @@ public class Jogo {
         }
     }
 
-    // Método para batalhar contra um inimigo
-    private void batalhar(Inimigo inimigo) {
+    private Item gerarItemAleatorio() {
+        Random random = new Random();
+        int numero = random.nextInt(100);
+
+        if (numero < 30) {
+            return new Arma("Espada", 5);
+        } else if (numero < 60) {
+            return new Arma("Cajado", 3);
+        } else if (numero < 90) {
+            return new Arma("Adaga", 4);
+        } else {
+            return null;
+        }
+    }
+
+    public void limparConsole() {
+        try {
+            if (System.getProperty("os.name").contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao limpar o console.");
+        }
+    }
+
+    private void batalhar(Inimigo inimigo, Item item) {
         System.out.println("Você encontrou um " + inimigo.getNome() + "!");
 
         while (jogador.getVida() > 0 && inimigo.getVida() > 0) {
@@ -101,12 +134,12 @@ public class Jogo {
             System.out.println("2. Fugir");
 
             int escolha = scanner.nextInt();
-            scanner.nextLine(); // Consumir nova linha
+            scanner.nextLine();
 
             if (escolha == 1) {
-                jogador.atacar(inimigo);
+                jogador.atacar(inimigo, item);  // Passa o item como argumento
                 if (inimigo.getVida() > 0) {
-                    inimigo.atacar(jogador);
+                    inimigo.atacar(jogador, item);  // Passa o item como argumento
                 }
             } else if (escolha == 2) {
                 System.out.println("Você fugiu da batalha.");
@@ -123,9 +156,8 @@ public class Jogo {
         }
     }
 
-    // Método para mostrar o status do jogador
     private void mostrarStatus() {
-        System.out.println("\nStatus do Jogador:");
+        System.out.println("\nStatus do model.Jogador:");
         System.out.println("Nome: " + jogador.getNome());
         System.out.println("Vida: " + jogador.getVida());
         System.out.println("Nível: " + jogador.getNivel());
