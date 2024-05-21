@@ -1,8 +1,8 @@
 package principal;
 
 import model.*;
+import menu.MenuPersonagens;
 
-import java.util.Random;
 import java.util.Scanner;
 
 public class Jogo {
@@ -16,40 +16,33 @@ public class Jogo {
 
     public void iniciar() {
         System.out.println("Bem-vindo ao RPG Textual!");
-        System.out.print("Digite o nome do seu personagem: ");
-        String nomeDoJogador = scanner.nextLine();
-        jogador = new Jogador(nomeDoJogador);
+        MenuPersonagens menuPersonagens = new MenuPersonagens();
+        jogador = (Jogador) menuPersonagens.criarPersonagem();
 
         mundo = new Mundo();
         configurarMundo();
-
         System.out.println("Olá, " + jogador.getNome() + "! Sua aventura começa agora.");
         jogar();
     }
 
     public void jogar() {
         while (true) {
-            limparConsole();
-            System.out.println("\nO que você gostaria de fazer?");
-            System.out.println("1. Explorar");
-            System.out.println("2. Ver status");
-            System.out.println("3. Ver inventário");
-            System.out.println("4. Sair");
-
-            int escolha = scanner.nextInt();
-            scanner.nextLine();
+            int escolha = exibirMenuPrincipal();
 
             switch (escolha) {
                 case 1:
                     explorar();
                     break;
                 case 2:
-                    mostrarStatus();
+                    System.out.println(jogador);
                     break;
                 case 3:
                     jogador.mostrarInventario();
                     break;
                 case 4:
+                    mostrarMissoes();
+                    break;
+                case 5:
                     System.out.println("Obrigado por jogar! Até a próxima.");
                     return;
                 default:
@@ -59,90 +52,54 @@ public class Jogo {
         }
     }
 
-    private void configurarMundo() {
-        Localizacao floresta = new Localizacao("Floresta");
-        floresta.adicionarInimigo(new Inimigo("Lobo", 30, 10, 2)); // Ajuste o poderDeAtaque para 10
-        floresta.adicionarInimigo(new Inimigo("Goblin", 20, 4, 1));
+    private int exibirMenuPrincipal() {
+        System.out.println("\nO que você gostaria de fazer?");
+        System.out.println("1. Explorar");
+        System.out.println("2. Ver status");
+        System.out.println("3. Ver inventário");
+        System.out.println("4. Ver missões");
+        System.out.println("5. Sair");
 
-        Localizacao caverna = new Localizacao("Caverna");
-        caverna.adicionarInimigo(new Inimigo("Troll", 50, 7, 3));
-        caverna.adicionarInimigo(new Inimigo("Morcego Gigante", 25, 6, 1));
-
-        mundo.adicionarLocalizacao(floresta);
-        mundo.adicionarLocalizacao(caverna);
+        return scanner.nextInt();
     }
 
     private void explorar() {
-        System.out.println("Você está explorando...");
-
-        Item item = gerarItemAleatorio();
-        if (item != null) {
-            System.out.println("Você encontrou um item: " + item.getNome());
-            jogador.adicionarItem(item);
-        }
-
         Localizacao local = mundo.getLocalizacaoAleatoria();
-        System.out.println("Você encontrou: " + local.getNome());
+        if (local == null) {
+            System.out.println("Não há localizações disponíveis para explorar.");
+            return;
+        }
+        System.out.println("Você explora a localização: " + local.getNome());
 
         if (local.getInimigos().isEmpty()) {
             System.out.println("Não há inimigos aqui.");
         } else {
-            for (Inimigo inimigo : local.getInimigos()) {
-                batalhar(inimigo, item);  // Passa o item como argumento
-                if (jogador.getVida() <= 0) {
-                    System.out.println("Você morreu. Fim de jogo.");
-                    return;
-                }
-            }
+            Inimigo inimigo = local.getInimigos().get(0);
+            System.out.println("Você encontrou um " + inimigo.getNome() + "!");
+            batalhar(inimigo);
         }
     }
 
-    private Item gerarItemAleatorio() {
-        Random random = new Random();
-        int numero = random.nextInt(100);
-
-        if (numero < 30) {
-            return new Arma("Espada", 5);
-        } else if (numero < 60) {
-            return new Arma("Cajado", 3);
-        } else if (numero < 90) {
-            return new Arma("Adaga", 4);
-        } else {
-            return null;
-        }
-    }
-
-    public void limparConsole() {
-        try {
-            if (System.getProperty("os.name").contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
-            }
-        } catch (Exception e) {
-            System.out.println("Erro ao limpar o console.");
-        }
-    }
-
-    private void batalhar(Inimigo inimigo, Item item) {
-        System.out.println("Você encontrou um " + inimigo.getNome() + "!");
-
+    private void batalhar(Inimigo inimigo) {
         while (jogador.getVida() > 0 && inimigo.getVida() > 0) {
-            System.out.println("\nO que você gostaria de fazer?");
+            System.out.println("\nSua vida: " + jogador.getVida());
+            System.out.println("Vida do " + inimigo.getNome() + ": " + inimigo.getVida());
+
+            System.out.println("Escolha uma ação:");
             System.out.println("1. Atacar");
             System.out.println("2. Fugir");
 
             int escolha = scanner.nextInt();
-            scanner.nextLine();
 
             if (escolha == 1) {
-                jogador.atacar(inimigo, item);  // Passa o item como argumento
+                Item armaJogador = jogador.getInventario().isEmpty() ? new Arma("Punhos", 0) : jogador.getInventario().get(0);
+                jogador.atacar(inimigo, armaJogador);
                 if (inimigo.getVida() > 0) {
-                    inimigo.atacar(jogador, item);  // Passa o item como argumento
+                    Item armaInimigo = inimigo.getInventario().isEmpty() ? new Arma("Garras", 0) : inimigo.getInventario().get(0);
+                    inimigo.atacar(jogador, armaInimigo);
                 }
             } else if (escolha == 2) {
-                System.out.println("Você fugiu da batalha.");
+                System.out.println("Você fugiu da batalha!");
                 return;
             } else {
                 System.out.println("Opção inválida. Tente novamente.");
@@ -152,15 +109,34 @@ public class Jogo {
         if (jogador.getVida() > 0) {
             System.out.println("Você derrotou o " + inimigo.getNome() + "!");
         } else {
-            System.out.println("Você foi derrotado pelo " + inimigo.getNome() + ".");
+            System.out.println("Você foi derrotado pelo " + inimigo.getNome() + "...");
+            System.exit(0);
         }
     }
 
-    private void mostrarStatus() {
-        System.out.println("\nStatus do model.Jogador:");
-        System.out.println("Nome: " + jogador.getNome());
-        System.out.println("Vida: " + jogador.getVida());
-        System.out.println("Nível: " + jogador.getNivel());
-        System.out.println("Experiência: " + jogador.getExperiencia());
+    private void mostrarMissoes() {
+        mundo.mostrarMissoes();
+    }
+
+    private void configurarMundo() {
+        Localizacao floresta = new Localizacao("Floresta", "Uma floresta densa e misteriosa.");
+        Localizacao caverna = new Localizacao("Caverna", "Uma caverna escura e úmida.");
+
+        Inimigo goblin = new Inimigo("Goblin", 30, 5, 2);
+        goblin.adicionarItem(new Arma("Adaga enferrujada", 2));
+        Inimigo troll = new Inimigo("Troll", 50, 8, 5);
+        troll.adicionarItem(new Arma("Clava", 3));
+
+        floresta.adicionarInimigo(goblin);
+        caverna.adicionarInimigo(troll);
+
+        mundo.adicionarLocalizacao(floresta);
+        mundo.adicionarLocalizacao(caverna);
+
+        Missao missao1 = new Missao("Derrote o Goblin na Floresta", 50, "Poção de Cura");
+        Missao missao2 = new Missao("Derrote o Troll na Caverna", 100, "Elmo de Ferro");
+
+        mundo.adicionarMissao(missao1);
+        mundo.adicionarMissao(missao2);
     }
 }

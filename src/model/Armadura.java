@@ -1,12 +1,15 @@
 package model;
 
-import model.Item;
-
 public class Armadura extends Item {
     private int bonusDeDefesa;
 
     public Armadura(String nome, int bonusDeDefesa) {
         super(nome);
+        this.bonusDeDefesa = bonusDeDefesa;
+    }
+
+    public Armadura(String nome, String descricao, int bonusDeDefesa) {
+        super(nome, descricao);
         this.bonusDeDefesa = bonusDeDefesa;
     }
 

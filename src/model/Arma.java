@@ -1,7 +1,5 @@
 package model;
 
-import model.Item;
-
 public class Arma extends Item {
     private int bonusDeAtaque;
 
