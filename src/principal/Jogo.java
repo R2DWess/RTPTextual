@@ -108,9 +108,25 @@ public class Jogo {
 
         if (jogador.getVida() > 0) {
             System.out.println("Você derrotou o " + inimigo.getNome() + "!");
+            verificarMissoes(inimigo);  // Adicionando a chamada para verificar missões
         } else {
             System.out.println("Você foi derrotado pelo " + inimigo.getNome() + "...");
             System.exit(0);
+        }
+    }
+
+    private void verificarMissoes(Inimigo inimigo) {
+        System.out.println("Verificando missões para o inimigo: " + inimigo.getNome()); // Mensagem de depuração
+        for (Missao missao : mundo.getMissoes()) {
+            System.out.println("Verificando missão: " + missao.getDescricao()); // Mensagem de depuração
+            if (missao.getDescricao().toLowerCase().contains(inimigo.getNome().toLowerCase()) && !missao.isCompleta()) {
+                missao.completar();
+                jogador.ganharExperiencia(missao.getRecompensaExperiencia());
+                System.out.println("Missão completa: " + missao.getDescricao()); // Mensagem de depuração
+                System.out.println("Você recebeu " + missao.getRecompensaExperiencia() + " pontos de experiência e " + missao.getRecompensaItem());
+            } else {
+                System.out.println("A missão não é aplicável ou já está completa."); // Mensagem de depuração
+            }
         }
     }
 
