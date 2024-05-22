@@ -108,6 +108,12 @@ public class Jogo {
 
         if (jogador.getVida() > 0) {
             System.out.println("Você derrotou o " + inimigo.getNome() + "!");
+            String nome = inimigo.getNome();
+            if(nome == "Goblin"){
+                mundo.finalizaMissao(0);
+            } else if(nome == "Troll"){
+                mundo.finalizaMissao(1);
+            }
         } else {
             System.out.println("Você foi derrotado pelo " + inimigo.getNome() + "...");
             System.exit(0);

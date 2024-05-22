@@ -23,6 +23,10 @@ public class Mundo {
         return localizacoes;
     }
 
+    public void finalizaMissao(int indexMissao) {
+        missoes.get(indexMissao).completar();
+    }
+
     public Localizacao getLocalizacaoAleatoria() {
         if (localizacoes.isEmpty()) {
             return null;
