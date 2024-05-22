@@ -14,7 +14,7 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [x] Ajustar a coleta de armamento para os jogadores
 - [x] Implementar mais ações aos personagens, como falar, correr, etc.
 - [x] Implementar mais ações aos inimigos, como usar poderes, fugir, etc.
-- [ ] Implementar uma eficiência mais robusta ao sistema de inventários.
+- [X] Implementar uma eficiência mais robusta ao sistema de inventários.
 - [ ] Integrar o sistema a um banco de dados, para que assim possamos salvar o progresso do jogador.
 
 ## 💻 Pré-requisitos
