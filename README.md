@@ -64,7 +64,7 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
   <tr>
     <td align="center">
       <a href="#" title="defina o titulo do link">
-        <img src="https://media.licdn.com/dms/image/D4D03AQEPj_QWJ4pfMg/profile-displayphoto-shrink_800_800/0/1710906912813?e=1721865600&v=beta&t=-CBUL9DNTjjoDCh9jGmrpf6XaKkJlQswGIADN3R-C6E" width="100px;" alt="Foto do Wesley Lima"/><br>
+        <img src="https://media.licdn.com/dms/image/D4D03AQGnIzTyPW-ctw/profile-displayphoto-shrink_800_800/0/1718908709929?e=1724284800&v=beta&t=Cnilj9FRnljF4pW7s_gzoXJlAbVOBGz96o-1YJ29pOw" width="100px;" alt="Foto do Wesley Lima"/><br>
         <sub>
           <b>Wesley Lima</b>
         </sub>
